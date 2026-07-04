@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microbiology Portal | Advanced Assessment Matrix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2c3e35;
+            --text-muted: #5a6e63;
+            --primary: #1e4d3a;       /* Deep Bio-Green */
+            --primary-light: #e8f0ec;
+            --accent: #2a9d8f;        /* Microbe Teal */
+            --correct: #2b9348;
+            --incorrect: #d90429;
+            --warning: #ffb703;
+            --border: #dae3df;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+            /* Subtle abstract scientific background grid */
+            background-image: 
+                radial-gradient(var(--primary-light) 1px, transparent 0),
+                radial-gradient(var(--primary-light) 1px, transparent 0);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* --- HEADER STYLING --- */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .microbe-icon {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            margin-bottom: 12px;
+            color: var(--primary);
+            line-height: 50px;
+            font-size: 24px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-size: 1rem;
+        }
+
+        /* --- CARD STYLING --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(30, 77, 58, 0.04);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- FORM STYLING --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], select {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: #fafbfc;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15);
+        }
+
+        /* --- QUESTION MATRIX --- */
+        .question-block {
+            padding: 24px;
+            border-radius: 12px;
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-main);
+            text-transform: none;
+            letter-spacing: normal;
+            transition: all 0.2s ease;
+        }
+
+        .radio-group label:hover {
+            border-color: var(--accent);
+            background: var(--primary-light);
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--accent);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* --- METADATA & BADGES --- */
+        .metadata-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .metadata-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 6px;
+            font-weight: 500;
+            border: 1px solid rgba(30, 77, 58, 0.1);
+        }
+
+        /* --- GRADING COLOR STATES --- */
+        .correct-choice {
+            background-color: rgba(43, 147, 72, 0.1) !important;
+            border-color: var(--correct) !important;
+            color: var(--correct) !important;
+            font-weight: 600 !important;
+        }
+
+        .incorrect-choice {
+            background-color: rgba(217, 4, 41, 0.1) !important;
+            border-color: var(--incorrect) !important;
+            color: var(--incorrect) !important;
+        }
+
+        .feedback-text {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback-correct { display: block; color: var(--correct); }
+        .feedback-incorrect { display: block; color: var(--incorrect); }
+
+        /* --- BUTTONS --- */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(30, 77, 58, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #153629;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* --- ACADEMIC FOOTER CREDITS --- */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer .credit-line {
+            font-weight: 500;
+            color: var(--primary);
+            letter-spacing: 0.2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="microbe-icon">🦠</div>
+        <h1>Microbiology Assessment Portal</h1>
+	<p>MICROBIAL PHYSIOLOGY AND GENETICS</p>
+        <p>Department of Microbiology, Ramaiah college of arts, science and commerce-Autonomous</p>
+    </header>
+
+    <form id="megaQuizForm">
+        <!-- Card 1: Student Registry Details -->
+        <div class="card">
+            <div class="card-title">📋 Student Registration Profile</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="studentName" placeholder="Enter formal name" required>
+                </div>
+                <div class="form-group">
+                    <label>Register Number</label>
+                    <input type="text" id="regNum" placeholder="University Registration ID" required>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Semester</label>
+                    <select id="semester" required>
+                        <option value="">-- Choose Semester --</option>
+                        <option value="I Semester">I Semester</option>
+                        <option value="II Semester">II Semester</option>
+                        <option value="III Semester">III Semester</option>
+                        <option value="IV Semester">IV Semester</option>
+                        <option value="V Semester">V Semester</option>
+                        <option value="VI Semester">VI Semester</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Assessment Configuration</label>
+                    <select id="assessmentType" required>
+                        <option value="">-- Choose Evaluation Mode --</option>
+                        <option value="Pre class test">Pre class test</option>
+                        <option value="Post class test">Post class test</option>
+                       Track</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Curriculum Domain Logic Router -->
+        <div class="card">
+            <div class="card-title">🧬 Curriculum Curricular Target</div>
+            <div class="grid-2">
+                <div class="form-group">
+                   <label>Syllabus Curricular Unit</label>
+                    <select id="unitSelect" required>
+                        <option value="">-- Select Curriculum Module --</option>
+                        <option value="unit1">Unit 1: Bioenergetics and Enzymes</option>
+                        <option value="unit2">Unit 2: Energy yielding processes in Prokaryotes</option>
+                        <option value="unit3">Unit 3: Genome Organization</option>
+                        <option value="unit4">Unit 4: Principles of Genetic Variation in Microorganisms</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sub-Topic </label>
+                    <select id="topicSelect" disabled required>
+                        <option value="">-- Select Sub-Topic --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Questions Rendering Output Section Frame -->
+        <div id="quizSection" style="display: none; margin-bottom: 24px;">
+            <div class="card">
+                <div class="card-title">🔬 Active Analytical Assessment Matrix</div>
+                <div id="questionsContainer"></div>
+                <button type="submit" id="submitBtn" class="btn btn-primary">Process and Submit Evaluation Matrix</button>
+                <button type="button" id="resetBtn" onclick="resetFormToDefault()" class="btn btn-secondary" style="display:none;">Initialize Next Profile Assessment</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Standard Academic Credit Footer Frame -->
+    <footer>
+        <p class="credit-line">Webpage developed by Dr. Swetha P.</p>
+        <p>Department of Microbiology • Ramaiah college of arts, science and commerce-Autonomous</p>
+    </footer>
+</div>
+
+<script>
+    // --- COMPLETE 40-QUESTION DATA STORE ---
+    const quizDatabase = {
+        unit1: {
+            co: "CO-1", blooms: "L-4 (Analyzing)",
+            topics: {
+                "Bioenergetics & Free Energy": [
+                    { q: "When a biochemical reaction exhibits a negative change in standard free energy (-ΔG°'), it is chemically classified as:", a: ["Endergonic and non-spontaneous", "Exergonic and spontaneous", "At thermodynamic equilibrium", "Heat-absorbent"], c: "Exergonic and spontaneous" },
+                    { q: "Which core high-energy compound serves as the primary currency for free energy transformations in living cells?", a: ["Adenosine Triphosphate (ATP)", "Glucose-6-Phosphate", "AMP", "Glycerol-3-Phosphate"], c: "Adenosine Triphosphate (ATP)" },
+                    { q: "Biological oxidation-reduction configurations dictate that the chemical species which loses its electrons undergoes:", a: ["Oxidation", "Reduction", "Phosphorylation", "Anabolism"], c: "Oxidation" },
+                    { q: "The mathematical relationship relating changes in enthalpy (ΔH) and entropy (ΔS) to free energy changes is expressed by which scientist's formula?", a: ["Gibbs equation", "Michaelis-Menten equation", "Nernst equation", "Beer-Lambert equation"], c: "Gibbs equation" },
+                    { q: "If a reaction has a ΔG equal to zero, what state has the closed system achieved?", a: ["Maximum velocity", "Thermodynamic equilibrium", "Complete exhaustion of kinetic substrates", "Irreversible cellular death"], c: "Thermodynamic equilibrium" },
+                    { q: "Which property is shared by all high-energy phosphate transfer compounds in bacterial systems?", a: ["They release large amounts of free energy upon bond hydrolysis", "They contain identical ester linkages", "They remain immune to cytoplasmic pH variations", "They only interact with purine structural derivatives"], c: "They release large amounts of free energy upon bond hydrolysis" },
+                    { q: "What is the theoretical standard free energy release associated with the structural hydrolysis of ATP to ADP and Pi?", a: ["-7.3 kcal/mol", "-14.6 kcal/mol", "+3.4 kcal/mol", "-3.1 kcal/mol"], c: "-7.3 kcal/mol" },
+                    { q: "In standard biochemical conventions, the state parameters denoted by prime symbol notations specify a physiological pH equal to:", a: ["7.0", "0.0", "1.0", "7.4"], c: "7.0" },
+                    { q: "A process that absorbs free energy from its immediate microenvironment is strictly defined as:", a: ["Endergonic", "Exergonic", "Exothermic", "Adiabatic"], c: "Endergonic" },
+                    { q: "Which molecule functions as an intermediate high-energy compound with a higher phosphate transfer potential than ATP?", a: ["Phosphoenolpyruvate (PEP)", "Glucose-1-phosphate", "Glycerol-3-phosphate", "Adenosine monophosphate"], c: "Phosphoenolpyruvate (PEP)" }
+                ],
+                "Enzyme Structure & Classification": [
+                    { q: "An enzyme that requires a non-protein cofactor to function, but is currently missing it, is called a/an:", a: ["Apoenzyme", "Holoenzyme", "Zymogen", "Isozyme"], c: "Apoenzyme" },
+                    { q: "According to the IUBMB system, enzymes that catalyze the rearrangement of bonds within a single molecule are:", a: ["Isomerases", "Lyases", "Hydrolases", "Transferases"], c: "Isomerases" },
+                    { q: "The multi-subunit variant Lactate Dehydrogenase exhibits different molecular structures in different tissues while executing identical reactions. These are:", a: ["Isozymes", "Ribozymes", "Monomers", "Coenzymes"], c: "Isozymes" },
+                    { q: "The catalytic strategy of an active site that uses amino acid side chains to briefly form a covalent bond with the substrate is called:", a: ["Covalent catalysis", "Acid-base catalysis", "Metal ion catalysis", "Electrostatic alignment"], c: "Covalent catalysis" },
+                    { q: "Under the formal EC nomenclature system, what specific enzymatic performance is classified into Class 1 structural groups?", a: ["Oxidoreductases", "Transferases", "Hydrolases", "Ligases"], c: "Oxidoreductases" },
+                    { q: "Which organic molecule type represents non-protein components loosely bound to active structural frames?", a: ["Coenzymes", "Prosthetic groups", "Apoenzymes", "Zymogens"], c: "Coenzymes" },
+                    { q: "The active structural form of an enzyme combined with all its essential non-protein parts is termed a:", a: ["Holoenzyme", "Apoenzyme", "Proenzyme", "Zymogen"], c: "Holoenzyme" },
+                    { q: "Which amino acid residue is exceptionally common in acid-base catalysis profiles due to a pKa near neutral pH?", a: ["Histidine", "Lysine", "Aspartate", "Glycine"], c: "Histidine" },
+                    { q: "What mechanism explains the precise shape transformation of an active site when a target substrate binds?", a: ["Induced-fit model", "Lock-and-key model", "Fluid mosaic configuration", "Allosteric denaturation tracking"], c: "Induced-fit model" },
+                    { q: "Enzymes speed up chemical processes by performing which action?", a: ["Lowering the activation energy barrier", "Shifting the overall standard reaction equilibrium", "Increasing total system free energy parameters", "Altering the chemical nature of final products"], c: "Lowering the activation energy barrier" }
+                ],
+                "Enzyme Kinetics & Inhibition": [
+                    { q: "Which equation format corresponds to the double-reciprocal Lineweaver-Burk transform plot?", a: ["1/v = (Km/Vmax)(1/[S]) + 1/Vmax", "v = Vmax[S] / (Km + [S])", "v = -Km(v/[S]) + Vmax", "[S]/v = [S]/Vmax + Km/Vmax"], c: "1/v = (Km/Vmax)(1/[S]) + 1/Vmax" },
+                    { q: "A competitive inhibitor modifies the apparent kinetic properties of an enzyme by doing what?", a: ["Increasing Km while Vmax stays unchanged", "Decreasing Vmax while Km stays unchanged", "Decreasing both Km and Vmax", "Increasing both Km and Vmax"], c: "Increasing Km while Vmax stays unchanged" },
+                    { q: "Uncompetitive inhibitors bind exclusively to which element of the reaction?", a: ["The Enzyme-Substrate (ES) complex", "The free Enzyme active site", "The allosteric site of free enzyme", "The product complex"], c: "The Enzyme-Substrate (ES) complex" },
+                    { q: "What does the Michaelis constant (Km) represent in terms of substrate concentration performance?", a: ["The substrate concentration at half-maximal velocity", "The total speed capacity under saturating setups", "The structural dissolution constant of enzyme units", "The turnover rate per active analytical site"], c: "The substrate concentration at half-maximal velocity" },
+                    { q: "When an enzymatic system is saturated with substrate molecules, the reaction order follows:", a: ["Zero-order kinetics", "First-order kinetics", "Second-order kinetics", "Pseudo-first-order matrices"], c: "Zero-order kinetics" },
+                    { q: "The maximum turnover number of a clean catalytic system per unit time is mathematically defined as:", a: ["Kcat", "Km", "Vmax", "Ki"], c: "Kcat" },
+                    { q: "Non-competitive structural inhibitors cause what change in absolute kinetic parameters?", a: ["Decrease Vmax without changing Km", "Increase Km without altering Vmax limits", "Decrease both Km and Vmax values", "Increase both Vmax and Km values"], c: "Decrease Vmax without changing Km" },
+                    { q: "Which structural plot maps substrate velocities directly onto an unmodified, hyperbolic substrate spectrum?", a: ["Michaelis-Menten plot", "Lineweaver-Burk plot", "Eadie-Hofstee plot", "Hanes-Woolf configuration"], c: "Michaelis-Menten plot" },
+                    { q: "Allosteric enzymes frequently yield velocity curves with which specific geometric shape?", a: ["Sigmoidal curve", "Hyperbolic trajectory", "Linear path alignment", "Parabolic tracking form"], c: "Sigmoidal curve" },
+                    { q: "The ultimate measurement parameter for assessing an enzyme's catalytic efficiency is designated by which ratio?", a: ["Kcat / Km", "Km / Vmax", "Vmax / Kcat", "Ki / Km"], c: "Kcat / Km" }
+                ]
+            }
+        },
+        unit2: {
+            co: "CO-2", blooms: "L-3 (Applying)",
+            topics: {
+                "Carbohydrate Breakdown Pathways": [
+                    { q: "Which pathway utilizes 2-keto-3-deoxy-6-phosphogluconate (KDPG) aldolase as a signature cleavage enzyme?", a: ["Entner-Doudoroff (ED) pathway", "Embden-Meyerhof-Parnas (EMP) pathway", "Hexose Monophosphate (HMP) shunt", "Pentose Phosphate Pathway"], c: "Entner-Doudoroff (ED) pathway" },
+                    { q: "What is the net gain of ATP produced strictly via substrate-level phosphorylation when one glucose molecule finishes the EMP pathway?", a: ["2 ATP", "4 ATP", "36 ATP", "38 ATP"], c: "2 ATP" },
+                    { q: "Which cyclic pathway completes the total oxidation of acetyl-CoA to carbon dioxide while producing NADH and FADH2?", a: ["Tricarboxylic Acid (TCA) cycle", "Calvin cycle", "Glycolysis", "Glyoxylate shunt"], c: "Tricarboxylic Acid (TCA) cycle" },
+                    { q: "Which key regulatory enzyme controls a major checkpoint in glycolysis by phosphorylating fructose-6-phosphate?", a: ["Phosphofructokinase (PFK)", "Hexokinase", "Pyruvate Kinase", "Aldolase"], c: "Phosphofructokinase (PFK)" },
+                    { q: "What critical intermediate compound acts as the universal entry point for the bacterial TCA cycle?", a: ["Acetyl-CoA", "Oxaloacetate", "Citrate", "Pyruvate"], c: "Acetyl-CoA" },
+                    { q: "The metabolic primary role of the Hexose Monophosphate (HMP) shunt is to synthesize which reducing equivalent?", a: ["NADPH", "NADH", "FADH2", "ATP"], c: "NADPH" },
+                    { q: "Which conversion step in glycolysis directly couples carbon oxidation to the generation of a high-energy acyl-phosphate bond?", a: ["Glyceraldehyde-3-phosphate to 1,3-bisphosphoglycerate", "Fructose-6-phosphate to fructose-1,6-bisphosphate", "Phosphoenolpyruvate to pyruvate", "Glucose to glucose-6-phosphate"], c: "Glyceraldehyde-3-phosphate to 1,3-bisphosphoglycerate" },
+                    { q: "How many net molecules of carbon dioxide are lost during a single complete turn of the TCA cycle?", a: ["2", "1", "3", "4"], c: "2" },
+                    { q: "Which enzyme handles the conversion of succinate to fumarate while passing electrons directly to FAD inside the membrane layer?", a: ["Succinate dehydrogenase", "Isocitrate dehydrogenase", "Malate dehydrogenase", "Alpha-ketoglutarate dehydrogenase"], c: "Succinate dehydrogenase" },
+                    { q: "What structural modification separates the glyoxylate shunt from the regular TCA cycle?", a: ["Bypasses decarboxylation steps using isocitrate lyase and malate synthase", "Skips oxaloacetate generation", "Operates entirely outside membrane matrices", "Does not use acetyl-CoA building blocks"], c: "Bypasses decarboxylation steps using isocitrate lyase and malate synthase" }
+                ],
+                "Anaerobic Respiration & Chemoautotrophy": [
+                    { q: "What serves as the terminal electron acceptor during prokaryotic denitrification in anaerobic respiration?", a: ["Nitrate (NO3-)", "Sulfate (SO42-)", "Molecular Oxygen", "Ferric Iron"], c: "Nitrate (NO3-)" },
+                    { q: "Prokaryotes that generate metabolic energy by oxidizing inorganic compounds like Sulfur or Iron are classified as:", a: ["Chemoautotrophs / Chemolithotrophs", "Chemoorganotrophs", "Photoheterotrophs", "Mixotrophs"], c: "Chemoautotrophs / Chemolithotrophs" },
+                    { q: "What direct forces across the cytoplasmic membrane drive ATP production during oxidative phosphorylation?", a: ["Proton motive force", "Substrate group transfer", "Sodium-potassium pump action", "Osmotic balance shifts"], c: "Proton motive force" },
+                    { q: "Which target compound functions as the terminal electron acceptor for methanogenesis pathways?", a: ["Carbon Dioxide (CO2)", "Nitrite", "Elemental Sulfur", "Fumarate"], c: "Carbon Dioxide (CO2)" },
+                    { q: "The generation of ATP using an electrical and chemical gradient across a biological membrane is explained by:", a: ["Mitchell's chemiosmotic hypothesis", "Watson-Crick replication theory", "Pasteur's fermentation logic", "Lipmann's structural ATP design cycle"], c: "Mitchell's chemiosmotic hypothesis" },
+                    { q: "Which enzyme complex synthesizes structural ATP inside prokaryotes by utilizing the entry force of returning protons?", a: ["F1F0 ATP Synthase", "Cytochrome c oxidase", "NADH dehydrogenase", "Succinate dehydrogenase"], c: "F1F0 ATP Synthase" },
+                    { q: "During sulfate reduction, what activation molecule must sulfate bind to before it can accept electrons?", a: ["Adenosine phosphosulfate (APS)", "ATP", "Coenzyme Q", "Acetyl-CoA"], c: "Adenosine phosphosulfate (APS)" },
+                    { q: "Which bacterial organism is well known for its ability to oxidize ferrous iron ($Fe^{2+}$) into ferric iron ($Fe^{3+}$)?", a: ["Acidithiobacillus ferrooxidans", "Escherichia coli", "Nitrosomonas europaea", "Desulfovibrio desulfuricans"], c: "Acidithiobacillus ferrooxidans" },
+                    { q: "What inorganic substrate is oxidized by *Nitrosomonas* during the first stage of nitrification?", a: ["Ammonia ($NH_3$)", "Nitrite ($NO_2^-$)", "Nitrate ($NO_3^-$)", "Molecular Nitrogen ($N_2$)"], c: "Ammonia ($NH_3$)" },
+                    { q: "Why does anaerobic respiration yield less total net ATP compared to aerobic respiration using the same substrate?", a: ["The reduction potential of alternative electron acceptors is less positive than oxygen", "Anaerobic organisms lack membrane systems", "Substrate level steps are entirely skipped", "Protons cannot form gradients without oxygen"], c: "The reduction potential of alternative electron acceptors is less positive than oxygen" }
+                ],
+                "Fermentation Modes & Photosynthesis": [
+                    { q: "Which fermentation pathway results in a positive Voges-Proskauer (VP) test by gathering acetoin?", a: ["Butanediol fermentation", "Mixed acid fermentation", "Homolactic fermentation", "Propionic acid fermentation"], c: "Butanediol fermentation" },
+                    { q: "Which critical enzyme fixes carbon dioxide into organic forms during the Calvin cycle?", a: ["RuBisCO", "Phosphofructokinase", "Pyruvate kinase", "PEP carboxylase"], c: "RuBisCO" },
+                    { q: "Anoxygenic photosynthetic bacteria contain which light-absorbing pigment system?", a: ["Bacteriochlorophyll", "Chlorophyll a", "Phycobilins", "Phycocyanin"], c: "Bacteriochlorophyll" },
+                    { q: "What signature structural products are evaluated to identify a mixed acid fermentation pathway via a Methyl Red test?", a: ["High concentrations of stable lactic, acetic, and succinic acids", "Acetoin compounds", "Pure ethanol configurations", "Butanol and acetone mixes"], c: "High concentrations of stable lactic, acetic, and succinic acids" },
+                    { q: "What serves as the primary electron donor for anoxygenic photosynthetic green sulfur bacteria?", a: ["Hydrogen Sulfide ($H_2S$)", "Water ($H_2O$)", "Glucose", "Oxygen"], c: "Hydrogen Sulfide ($H_2S$)" },
+                    { q: "Which cyclic pathway is utilized by green nonsulfur bacteria to fix atmospheric carbon dioxide instead of the Calvin cycle?", a: ["Hydroxypropionate bi-cycle", "Reverse TCA cycle", "Reductive pentose phosphate cycle", "Wood-Ljungdahl pathway"], c: "Hydroxypropionate bi-cycle" },
+                    { q: "What is the primary role of fermentation pathways in bacterial cells that lack an active electron transport chain?", a: ["Regenerate $NAD^+$ from $NADH$ to keep glycolysis active", "Synthesize massive amounts of structural ATP", "Generate molecular oxygen matrices", "Fix inorganic carbon fragments"], c: "Regenerate $NAD^+$ from $NADH$ to keep glycolysis active" },
+                    { q: "Which bacterial group runs oxygenic photosynthesis using PS-I and PS-II like plants?", a: ["Cyanobacteria", "Purple sulfur bacteria", "Green nonsulfur bacteria", "Heliobacteria"], c: "Cyanobacteria" },
+                    { q: "What metabolic waste gas is produced during homolactic fermentation paths?", a: ["No gas is produced", "Carbon dioxide ($CO_2$)", "Hydrogen gas ($H_2$)", "Methane ($CH_4$)"], c: "No gas is produced" },
+                    { q: "The specific light-harvesting complex structures found in green sulfur bacteria are known as:", a: ["Chlorosomes", "Phycobilisomes", "Carboxysomes", "Thylakoid discs"], c: "Chlorosomes" }
+                ]
+            }
+        },
+        unit3: {
+            co: "CO-3", blooms: "L-2 (Understanding)",
+            topics: {
+                "Genome Structure & Organization": [
+                    { q: "The folded fiber model describes the structural packaging logic of which organism's chromosome?", a: ["Escherichia coli", "Saccharomyces cerevisiae", "Bacteriophage T4", "Human Helical Matrix"], c: "Escherichia coli" },
+                    { q: "Which structural variant of DNA displays a distinct left-handed helix twist and a zig-zag sugar-phosphate frame?", a: ["Z-DNA", "B-DNA", "A-DNA", "H-DNA"], c: "Z-DNA" },
+                    { q: "The basic structural repeating particle of eukaryotic chromatin containing DNA looped around a histone core is a:", a: ["Nucleosome", "Centromere", "Telomere", "Replicon"], c: "Nucleosome" },
+                    { q: "Which enzyme controls topological stress in bacterial DNA by introducing negative supercoils ahead of the replication fork?", a: ["DNA Gyrase (Topoisomerase II)", "DNA Polymerase I", "Helicase", "Single-stranded binding protein"], c: "DNA Gyrase (Topoisomerase II)" },
+                    { q: "What structural characteristic describes the arrangement of most bacterial chromosomes?", a: ["Circular and double-stranded", "Linear and single-stranded", "Circular and single-stranded", "Linear and double-stranded"], c: "Circular and double-stranded" },
+                    { q: "Which histone protein acts as the outer linker unit to secure DNA around the core nucleosome structure?", a: ["H1", "H2A", "H3", "H4"], c: "H1" },
+                    { q: "Highly condensed, transcriptionally inactive chromatin structures found in eukaryotic cells are called:", a: ["Heterochromatin", "Euchromatin", "Plasmids", "Nucleoids"], c: "Heterochromatin" },
+                    { q: "What non-chromosomal genetic element replicates independently in the cytoplasm of prokaryotes?", a: ["Plasmid", "Intron", "Centromere", "Transposon"], c: "Plasmid" },
+                    { q: "The standard structural distance across a single complete turn of a classic B-form DNA double helix is:", a: ["3.4 nm", "0.34 nm", "2.0 nm", "4.2 nm"], c: "3.4 nm" },
+                    { q: "What basic protein core components make up the octamer cluster inside a standard nucleosome configuration?", a: ["Two copies each of H2A, H2B, H3, and H4", "Two copies each of H1, H2A, H3, and H4", "Four copies each of H3 and H4", "One copy each of all five core histones"], c: "Two copies each of H2A, H2B, H3, and H4" }
+                ],
+                "DNA Replication Mechanisms": [
+                    { q: "Which replication structure model explains single-stranded tail displacement during plasmid or viral DNA duplication?", a: ["Rolling circle model", "Theta (θ) model", "Linear conservative model", "Bidirectional forks"], c: "Rolling circle model" },
+                    { q: "What does DNA Primase synthesize to provide the free 3'-OH end needed for elongation at the replication fork?", a: ["RNA Primers", "Okazaki fragments", "DNA Templates", "Promoter points"], c: "RNA Primers" },
+                    { q: "Eukaryotic genes that are interspersed with non-coding sequences (introns) are structurally defined as:", a: ["Split genes", "Overlapping genes", "Polycistronic blocks", "Operons"], c: "Split genes" },
+                    { q: "Which specific DNA polymerase handles the primary synthesis of both leading and lagging strands in *E. coli*?", a: ["DNA Polymerase III", "DNA Polymerase I", "DNA Polymerase II", "Beta Polymerase"], c: "DNA Polymerase III" },
+                    { q: "What enzyme links the sugar-phosphate backbones of Okazaki fragments during lagging strand completion?", a: ["DNA Ligase", "DNA Polymerase I", "Helicase", "Topoisomerase"], c: "DNA Ligase" },
+                    { q: "The specific sequence location where a bacterial replication cycle initiates is called the:", a: ["oriC", "Promoter", "Terminator", "Operator"], c: "oriC" },
+                    { q: "Which component removes RNA primers and fills the gaps with DNA on the lagging strand in prokaryotes?", a: ["DNA Polymerase I", "DNA Polymerase III", "Exonuclease III", "RNAse H"], c: "DNA Polymerase I" },
+                    { q: "What protein binds to the origin of replication in *E. coli* to initiate the unwinding of the double helix?", a: ["DnaA", "DnaB", "DnaC", "SSB"], c: "DnaA" },
+                    { q: "Why is replication at the lagging strand template forced to remain discontinuous?", a: ["DNA Polymerase can only synthesize DNA in the 5' to 3' direction", "Primase cannot bind to lagging strands continuously", "The lagging strand lacks single-strand binding proteins", "Topoisomerases only work on leading strand templates"], c: "DNA Polymerase can only synthesize DNA in the 5' to 3' direction" },
+                    { q: "Which enzyme extends the ends of eukaryotic chromosomes to prevent gene loss during replication?", a: ["Telomerase", "DNA Polymerase Alpha", "Topoisomerase I", "Ligase"], c: "Telomerase" }
+                ],
+                "DNA Repair Mechanisms": [
+                    { q: "Which enzymatic repair approach specifically targets and resolves pyrimidine dimers using blue light activation energy?", a: ["Photoreactivation (Photolyase)", "Base Excision Repair", "Mismatch Repair", "SOS Response Recombination"], c: "Photoreactivation (Photolyase)" },
+                    { q: "The mismatch repair framework tracks down mistakes on new strands by identifying which chemical variance?", a: ["Lack of methylation on the new strand", "Phosphorylation of the new strand", "Acetylation on the old strand", "Glycosylation footprints"], c: "Lack of methylation on the new strand" },
+                    { q: "Which mechanism deals with double-strand breaks by fetching matching sequences from a sister chromosome?", a: ["Homologous recombination repair", "Nucleotide excision repair", "Photoreactivation", "Mismatch repair"], c: "Homologous recombination repair" },
+                    { q: "Which specific enzyme cuts out abnormal or damaged bases directly from the sugar backbone during Base Excision Repair?", a: ["DNA Glycosylase", "AP Endonuclease", "DNA Polymerase I", "Excinuclease"], c: "DNA Glycosylase" },
+                    { q: "The global emergency response system in bacteria that handles heavy DNA damage is known as the:", a: ["SOS response", "Heat shock response", "Stringent response", "Ames system"], c: "SOS response" },
+                    { q: "Which core protein complex performs the initial excision step during nucleotide excision repair in *E. coli*?", a: ["UvrABC endonuclease", "MutHLS complex", "RecA tracker", "Phr photolyase matrix"], c: "UvrABC endonuclease" },
+                    { q: "What protein functions as the primary sensor and regulator that triggers the activation of the bacterial SOS repair system?", a: ["RecA", "LexA", "UvrD", "MutS"], c: "RecA" },
+                    { q: "Which structural suppressor protein represses the SOS response genes until it undergoes auto-cleavage?", a: ["LexA", "RecA", "DnaA", "Sigma 70"], c: "LexA" },
+                    { q: "What type of mutagenic damage is caused by exposure to ultraviolet (UV) radiation?", a: ["Thymine/Pyrimidine dimers", "Alkyl group additions", "Intercalating insertions", "Deamination of cytosine bases"], c: "Thymine/Pyrimidine dimers" },
+                    { q: "Which error-prone DNA polymerase is induced during the SOS response to pass un-repaired lesions?", a: ["DNA Polymerase V (UmuD'2C)", "DNA Polymerase III", "DNA Polymerase I", "DNA Polymerase II"], c: "DNA Polymerase V (UmuD'2C)" }
+                ]
+            }
+        },
+        unit4: {
+            co: "CO-4", blooms: "L-2 (Understanding)",
+            topics: {
+                "Genetic Variation & Recombination": [
+                    { q: "An Hfr donor strain is successfully formed when the bacterial F plasmid undergoes which event?", a: ["Integrates directly into the host bacterial chromosome", "Replicates independently in the cytoplasm", "Is broken down by restriction enzymes", "Fuses with a bacteriophage vector"], c: "Integrates directly into the host bacterial chromosome" },
+                    { q: "Griffith's historic transformation experiment with mice and Streptococcus pneumoniae proved that bacteria can:", a: ["Absorb free naked DNA from their environment", "Exchange genes via a sex pilus", "Transfer traits using a virus vector", "Spontaneously change their serotype without DNA"], c: "Absorb free naked DNA from their environment" },
+                    { q: "The transfer of bacterial host DNA through a defective replicating bacteriophage wrapper is named:", a: ["Transduction", "Transformation", "Conjugation", "Transposition"], c: "Transduction" },
+                    { q: "What specific surface structure must be produced by an F+ bacterial cell to initiate conjugation?", a: ["Sex pilus", "Flagellum", "Capsule", "Slime layer"], c: "Sex pilus" },
+                    { q: "To pick up environmental DNA through transformation, a bacterial cell must be in a state of:", a: ["Competence", "Lysogeny", "Conjugation readiness", "Sporulation"], c: "Competence" },
+                    { q: "What separates specialized transduction from generalized transduction?", a: ["Transfers only specific host genes near the viral integration site", "Uses plasmid vectors instead of viruses", "Can transfer any random gene fragment", "Requires direct physical contact between cells"], c: "Transfers only specific host genes near the viral integration site" },
+                    { q: "What enzyme cuts one strand of plasmid DNA at the *nic* site to start the conjugation transfer process?", a: ["Relaxase", "Transposase", "Integrase", "DNA Polymerase III"], c: "Relaxase" },
+                    { q: "The classic horizontal gene transfer method that is completely stopped by adding DNase to the medium is:", a: ["Transformation", "Transduction", "Conjugation", "Transposition"], c: "Transformation" },
+                    { q: "What form of replication copies the single-stranded F plasmid DNA into the recipient cell during conjugation?", a: ["Rolling-circle replication", "Theta bidirectional replication", "D-loop synthesis", "Discontinuous replication"], c: "Rolling-circle replication" },
+                    { q: "What state describes a recipient cell that has just received an integrated piece of host chromosome from an Hfr donor?", a: ["Merozygote (partial diploid)", "Complete homozygote", "F+ cell", "Lysogen"], c: "Merozygote (partial diploid)" }
+                ],
+                "Recombination & Transposition": [
+                    { q: "Segments of DNA capable of moving inserting themselves into different positions within a genome are called:", a: ["Transposable elements (Transposons)", "Plasmids", "Introns", "Exons"], c: "Transposable elements (Transposons)" },
+                    { q: "Which model of recombination requires extended sections of identical DNA sequences to cross over?", a: ["Homologous Recombination", "Site-Specific Recombination", "Transposition", "Illegitimate crossover"], c: "Homologous Recombination" },
+                    { q: "Conjugation involving an F' donor cell implies that the transferred plasmid contains what?", a: ["An integrated piece of host chromosomal DNA", "Only structural viral genes", "No origin of transfer region", "Mitochondrial mapping codes"], c: "An integrated piece of host chromosomal DNA" },
+                    { q: "What signature enzyme maps inside the simplest Insertion Sequences (IS elements)?", a: ["Transposase", "Integrase", "Resolvase", "Beta-lactamase"], c: "Transposase" },
+                    { q: "The cross-shaped DNA intermediate formed during homologous recombination is called a:", a: ["Holliday junction", "Theta structure", "Replication fork", "D-loop"], c: "Holliday junction" },
+                    { q: "What main protein drives the strand invasion step during homologous recombination in *E. coli*?", a: ["RecA", "RecBCD endonuclease", "RuvABC complex", "SSB"], c: "RecA" },
+                    { q: "Which transposable element carries extra structural genes, like antibiotic resistance markers, between flanking insertion sequences?", a: ["Composite transposon", "Insertion sequence", "Retrotransposon", "Phage vector"], c: "Composite transposon" },
+                    { q: "What genetic event occurs during replicative transposition that leaves a copy behind at the old site?", a: ["A co-integrate intermediate is formed and resolved", "The original element is cut out entirely", "RNA intermediates are generated", "Exonucleases degrade the donor strand"], c: "A co-integrate intermediate is formed and resolved" },
+                    { q: "Which protein complex handles the resolution and cutting of a Holliday junction?", a: ["RuvABC", "RecBCD", "DnaB helicase", "MutHLS"], c: "RuvABC" },
+                    { q: "What flanking genomic structure is created at the insertion site when a transposon integrates?", a: ["Direct target repeats", "Inverted terminal repeats", "Promoter regions", "Okazaki templates"], c: "Direct target repeats" }
+                ],
+                "Mutation Types & Selection Screens": [
+                    { q: "Which phenotypic screening methodology uses velvet transfers to isolate nutritional auxotrophic mutants?", a: ["Replica plate method", "Streak isolation assay", "Pour plate counting", "Enrichment broth dilution"], c: "Replica plate method" },
+                    { q: "What mutation type is triggered by an insertion or deletion that disrupts the triplet codon triplet sequence?", a: ["Frameshift mutation", "Missense mutation", "Nonsense mutation", "Silent mutation"], c: "Frameshift mutation" },
+                    { q: "A point mutation that converts a codon for an amino acid into a premature translation termination stop codon is a:", a: ["Nonsense mutation", "Missense mutation", "Silent mutation", "Frameshift error"], c: "Nonsense mutation" },
+                    { q: "What type of mutation changes a codon but still results in the exact same amino acid insertion?", a: ["Silent mutation", "Missense mutation", "Nonsense mutation", "Neutral mutation"], c: "Silent mutation" },
+                    { q: "A mutant microorganism that requires an extra nutritional supplement not needed by the wild-type strain is called an:", a: ["Auxotroph", "Prototroph", "Heterotroph", "Autotroph"], c: "Auxotroph" },
+                    { q: "What chemical mutagen profile matches 5-Bromouracil (5-BU)?", a: ["Base analog", "Alkylating agent", "Intercalating agent", "Deaminating compound"], c: "Base analog" },
+                    { q: "Which test evaluates the mutagenic potential of chemical compounds by measuring the reversion of Salmonella auxotrophs?", a: ["Ames test", "Flucytosine screen", "Replica assay", "Voges-Proskauer assay"], c: "Ames test" },
+                    { q: "What type of point mutation swaps out a purine base for a pyrimidine base?", a: ["Transversion", "Transition", "Inversion", "Translocation"], c: "Transversion" },
+                    { q: "Which mutagen slips between stacked base pairs of the DNA double helix to trigger frameshift errors?", a: ["Ethidium Bromide", "Nitrous Acid", "5-Bromouracil", "Ethyl methane sulfonate"], c: "Ethidium Bromide" },
+                    { q: "A secondary mutation that dampens or fixes the phenotypic effect of an earlier mutation at a different site is a:", a: ["Suppressor mutation", "Back mutation", "Silent mutation", "Missense correction"], c: "Suppressor mutation" }
+                ]
+            }
+        }
+    };
+
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwFc74GY5GqTuvsduSvtXyb9oB7bxS9JbdjveODkIAoAJ16bHVOSp97N8c8GlJWxwD_lw/exec";
+
+    const unitSelect = document.getElementById('unitSelect');
+    const topicSelect = document.getElementById('topicSelect');
+    const quizSection = document.getElementById('quizSection');
+    const container = document.getElementById('questionsContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let tabSwitchCounter = 0;
+    let isQuizSubmitted = false;
+
+    // --- WARNING OVERWATCH COUNTER ---
+    document.addEventListener('visibilitychange', () => {
+        if (quizSection.style.display !== "block" || isQuizSubmitted) return;
+
+        if (document.hidden) {
+            tabSwitchCounter++;
+            if (tabSwitchCounter <= 3) {
+                alert(`⚠️ ASSESSMENT SECURITY WARNING ⚠️\n\nTab switching or browser minimizing detected!\nPlease return to your active test frame.\n\nWarning Incidents: ${tabSwitchCounter} / 3`);
+            }
+        }
+    });
+
+    // --- DYNAMIC OPTION SELECTION ROUTING ---
+    unitSelect.addEventListener('change', function() {
+        const unit = this.value;
+        topicSelect.innerHTML = '<option value="">-- Select Sub-Topic --</option>';
+        quizSection.style.display = "none";
+        
+        if(!unit) {
+            topicSelect.disabled = true;
+            return;
+        }
+        
+        Object.keys(quizDatabase[unit].topics).forEach(topic => {
+            let opt = document.createElement('option');
+            opt.value = topic;
+            opt.textContent = topic;
+            topicSelect.appendChild(opt);
+        });
+        topicSelect.disabled = false;
+    });
+
+    topicSelect.addEventListener('change', function() {
+        const unit = unitSelect.value;
+        const topic = this.value;
+        container.innerHTML = "";
+        
+        if(!topic) {
+            quizSection.style.display = "none";
+            return;
+        }
+
+        const targetData = quizDatabase[unit];
+        const questions = targetData.topics[topic];
+
+        // Structural metadata wrapper badges
+        let metaHtml = `
+            <div class="metadata-container">
+                <span class="metadata-badge">Mapping Outcome: ${targetData.co}</span>
+                <span class="metadata-badge">Taxonomy Target: ${targetData.blooms}</span>
+            </div>
+        `;
+        container.innerHTML += metaHtml;
+
+        questions.forEach((item, index) => {
+            let qDiv = document.createElement('div');
+            qDiv.className = 'question-block';
+            qDiv.id = `qBlock_${index}`;
+            
+            let qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.textContent = `${index + 1}. ${item.q}`;
+            qDiv.appendChild(qText);
+
+            let rGroup = document.createElement('div');
+            rGroup.className = 'radio-group';
+
+            item.a.forEach((option, oIdx) => {
+                let lbl = document.createElement('label');
+                lbl.id = `label_${index}_${oIdx}`;
+                
+                let rad = document.createElement('input');
+                rad.type = "radio";
+                rad.name = `question_${index}`;
+                rad.value = option;
+                rad.required = true;
+                
+                lbl.appendChild(rad);
+                lbl.append(` ${option}`);
+                rGroup.appendChild(lbl);
+            });
+
+            qDiv.appendChild(rGroup);
+            
+            let fDiv = document.createElement('div');
+            fDiv.id = `feedback_${index}`;
+            fDiv.className = 'feedback-text';
+            qDiv.appendChild(fDiv);
+            
+            container.appendChild(qDiv);
+        });
+
+        submitBtn.style.display = "block";
+        resetBtn.style.display = "none";
+        quizSection.style.display = "block";
+        
+        tabSwitchCounter = 0; 
+        isQuizSubmitted = false;
+    });
+
+    // --- PAYLOAD DELIVERY FORM PACKET EXECUTOR ---
+    document.getElementById('megaQuizForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        isQuizSubmitted = true;
+        
+        const unitKey = unitSelect.value;
+        const topicKey = topicSelect.value;
+        const questions = quizDatabase[unitKey].topics[topicKey];
+        
+        let rawScore = 0;
+        
+        questions.forEach((item, index) => {
+            const selectedRadio = document.querySelector(`input[name="question_${index}"]:checked`);
+            const selectedValue = selectedRadio.value;
+            const feedbackDiv = document.getElementById(`feedback_${index}`);
+            
+            document.querySelectorAll(`input[name="question_${index}"]`).forEach(input => input.disabled = true);
+
+            item.a.forEach((option, oIdx) => {
+                const currentLabel = document.getElementById('label_' + index + '_' + oIdx);
+                if (option === item.c) {
+                    currentLabel.classList.add('correct-choice');
+                } else if (option === selectedValue && option !== item.c) {
+                    currentLabel.classList.add('incorrect-choice');
+                }
+            });
+
+            if (selectedValue === item.c) {
+                rawScore++;
+                feedbackDiv.innerHTML = "✓ Correct Assessment Entry";
+                feedbackDiv.className = "feedback-text feedback-correct";
+            } else {
+                feedbackDiv.innerHTML = `✗ Deviation Tracked. (Correct Reference: ${item.c})`;
+                feedbackDiv.className = "feedback-text feedback-incorrect";
+            }
+        });
+
+        submitBtn.style.display = "none";
+        resetBtn.style.display = "block";
+
+        let integrityNote = `${tabSwitchCounter} switches`;
+        if (tabSwitchCounter >= 3) {
+            integrityNote += " [FLAGGED EXAM VIOLATION]";
+        }
+
+        const payload = {
+            name: document.getElementById('studentName').value,
+            regNum: document.getElementById('regNum').value,
+            semester: document.getElementById('semester').value,
+            assessmentType: document.getElementById('assessmentType').value,
+            unit: unitSelect.options[unitSelect.selectedIndex].text,
+            topic: topicKey,
+            score: `${rawScore}/${questions.length}`,
+            co: quizDatabase[unitKey].co,
+            blooms: quizDatabase[unitKey].blooms,
+            cheatingTracker: `Tracked: ${integrityNote}`
+        };
+
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            alert(`Assessment Matrix Logged Successfully!\nCalculated Score: ${payload.score}`);
+        })
+        .catch(err => alert("Data link interface timeout: " + err));
+    });
+
+    function resetFormToDefault() {
+        document.getElementById('megaQuizForm').reset();
+        topicSelect.disabled = true;
+        quizSection.style.display = "none";
+        container.innerHTML = "";
+    }
+</script>
+</body>
+</html>
