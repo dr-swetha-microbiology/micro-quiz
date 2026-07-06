@@ -372,6 +372,42 @@
 
 <script>
     // --- COMPLETE 40-QUESTION DATA STORE ---
+function formatChemicalStrings(text) {
+    if (!text) return "";
+    
+    // 1. Strip out raw formatting characters ($ and _) so they don't break our matching rules
+    let cleanText = text.replace(/\$/g, '').replace(/_/g, '');
+    
+    // 2. Handle standard biochemical coenzymes with superscripts (e.g., NAD^+ -> NAD⁺)
+    cleanText = cleanText.replace(/(NAD|NADP)\s*\^\s*\+/gi, '$1<sup>+</sup>');
+    
+    // 3. Clear out LaTeX-style syntax in questions like Fe^{2+} -> Fe2+
+    cleanText = cleanText.replace(/([A-Za-z]+)\^\{\s*(\d*[+-])\s*\}/gi, '$1$2');
+
+    // 4. Fix trailing carets/hyphens in choices like NO2^- -> NO2-
+    cleanText = cleanText.replace(/([A-Za-z]+)(\d+)\^-\/?/gi, '$1$2-');
+    cleanText = cleanText.replace(/([A-Za-z]+)(\d+)\^(\d+-)/gi, '$1$2$3');
+
+    // 5. Match common microbiology polyatomic ions and apply textbook tags
+    cleanText = cleanText.replace(/SO4\s*2\s*-\/?/gi, 'SO<sub>4</sub><sup>2-</sup>');
+    cleanText = cleanText.replace(/NO3\s*-\/?/gi, 'NO<sub>3</sub><sup>-</sup>');
+    cleanText = cleanText.replace(/NO2\s*-\/?/gi, 'NO<sub>2</sub><sup>-</sup>');
+    cleanText = cleanText.replace(/PO4\s*3\s*-\/?/gi, 'PO<sub>4</sub><sup>3-</sup>');
+    cleanText = cleanText.replace(/CO3\s*2\s*-\/?/gi, 'CO<sub>3</sub><sup>2-</sup>');
+    
+    // 6. Format standard metal ions
+    cleanText = cleanText.replace(/Fe\s*2\s*\+/gi, 'Fe<sup>2+</sup>');
+    cleanText = cleanText.replace(/Fe\s*3\s*\+/gi, 'Fe<sup>3+</sup>');
+
+    // 7. Format sequential neutral compounds (Works for H2S, H2O, CH4, etc.)
+    cleanText = cleanText.replace(/(C|O|H|N|S|P|Fe)\s*(\d+)(?![^<]*>)/g, '$1<sub>$2</sub>');
+
+    // 8. Enzymology Extension: Format Km and Vmax subscripts beautifully
+    cleanText = cleanText.replace(/\bKm\b/g, 'K<sub>m</sub>');
+    cleanText = cleanText.replace(/\bVmax\b/g, 'V<sub>max</sub>');
+
+    return cleanText;
+}
     const quizDatabase = {
         unit1: {
             co: "CO-1", blooms: "L-4 (Analyzing)",
@@ -605,6 +641,7 @@
         `;
         container.innerHTML += metaHtml;
 
+        // --- MAIN REPLACEMENT BLOCK ---
         questions.forEach((item, index) => {
             let qDiv = document.createElement('div');
             qDiv.className = 'question-block';
@@ -612,14 +649,24 @@
             
             let qText = document.createElement('div');
             qText.className = 'question-text';
-            qText.textContent = `${index + 1}. ${item.q}`;
+            qText.innerHTML = `${index + 1}. ${formatChemicalStrings(item.q)}`;
             qDiv.appendChild(qText);
 
             let rGroup = document.createElement('div');
-            rGroup.className = 'radio-group';
+            rGroup.className = 'radio-group'; // Restored your original CSS class name here
+                
+            // 1. Create a temporary copy of the answers array to shuffle
+            let jumbledOptions = [...item.a];
+            for (let i = jumbledOptions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                // FIXED SWAP: This maps elements to elements correctly so text returns!
+                [jumbledOptions[i], jumbledOptions[j]] = [jumbledOptions[j], jumbledOptions[i]];
+            }
 
-            item.a.forEach((option, oIdx) => {
+            // 2. Loop through the randomized options instead
+            jumbledOptions.forEach((option, oIdx) => {
                 let lbl = document.createElement('label');
+                lbl.className = 'option-label';
                 lbl.id = `label_${index}_${oIdx}`;
                 
                 let rad = document.createElement('input');
@@ -629,19 +676,24 @@
                 rad.required = true;
                 
                 lbl.appendChild(rad);
-                lbl.append(` ${option}`);
+                
+                let optSpan = document.createElement('span');
+                optSpan.innerHTML = ` ${formatChemicalStrings(option)}`;
+                lbl.appendChild(optSpan);
+                
                 rGroup.appendChild(lbl);
-            });
+            }); // Closes jumbledOptions.forEach safely
 
             qDiv.appendChild(rGroup);
             
+            // 3. Create the feedback container for grading
             let fDiv = document.createElement('div');
             fDiv.id = `feedback_${index}`;
             fDiv.className = 'feedback-text';
             qDiv.appendChild(fDiv);
             
             container.appendChild(qDiv);
-        });
+        }); // Closes questions.forEach safely
 
         submitBtn.style.display = "block";
         resetBtn.style.display = "none";
@@ -683,7 +735,7 @@
                 feedbackDiv.innerHTML = "✓ Correct Assessment Entry";
                 feedbackDiv.className = "feedback-text feedback-correct";
             } else {
-                feedbackDiv.innerHTML = `✗ Deviation Tracked. (Correct Reference: ${item.c})`;
+                feedbackDiv.innerHTML = `✗ Deviation Tracked. (Correct Reference: ${formatChemicalStrings(item.c)})`;
                 feedbackDiv.className = "feedback-text feedback-incorrect";
             }
         });
